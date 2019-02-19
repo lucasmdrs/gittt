@@ -50,7 +50,7 @@ func (g *gittt) ListenForEvents(eventTypes ...string) error {
 			continue
 		}
 		g.triggers = currentTriggers
-		return fmt.Errorf("Trigger not implemented")
+		return fmt.Errorf(`Event "%s" is not available`, event)
 	}
 	return nil
 }
