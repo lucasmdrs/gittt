@@ -3,6 +3,7 @@ package gittt
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -24,17 +25,20 @@ func (g *Gittt) Handler(w http.ResponseWriter, r *http.Request) {
 	event := r.Header.Get(ghEventHeader)
 	t, enabled := g.triggers[event]
 	if !enabled {
+		log.Printf("Invalid Event: %s\n", event)
 		http.Error(w, "Invalid Event", http.StatusBadRequest)
 		return
 	}
 
 	if r.Body == nil {
+		log.Println("Invalid payload")
 		http.Error(w, "Invalid payload", http.StatusBadRequest)
 		return
 	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		log.Println("Invalid payload")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -82,7 +86,7 @@ func (g *Gittt) AddConditions(conditions ...condition) {
 
 func (g *Gittt) matchConditionals(data interface{}) (actions []action) {
 	for _, c := range g.conditions {
-		if c.evalFunc(data) {
+		if c.evalFunc(data, c.arg...) {
 			actions = append(actions, c.actions...)
 		}
 	}

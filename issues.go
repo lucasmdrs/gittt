@@ -2,6 +2,7 @@ package gittt
 
 import (
 	"encoding/json"
+	"log"
 )
 
 type Issue struct {
@@ -22,6 +23,7 @@ func IssuesTrigger(g *Gittt, data []byte) error {
 		return err
 	}
 
+	log.Println("Issue Event Received")
 	actions := g.matchConditionals(i)
 	for _, action := range actions {
 		action.Do(i)
@@ -35,6 +37,7 @@ func (g *Gittt) IssueLabelsIsOneOf(data interface{}, labels ...interface{}) bool
 		for _, label := range labels {
 			for _, l := range i.Info.Labels {
 				if label.(string) == l.Name {
+					log.Printf("Condition match: labels contains %s\n", label.(string))
 					return true
 				}
 			}
@@ -45,7 +48,10 @@ func (g *Gittt) IssueLabelsIsOneOf(data interface{}, labels ...interface{}) bool
 
 func (g *Gittt) IssueIsClosed(data interface{}, args ...interface{}) bool {
 	if i, ok := data.(Issue); ok {
-		return i.Info.State == "closed"
+		if i.Info.State == "closed" {
+			log.Println("Condition match: Issue is closed.")
+			return true
+		}
 	}
 	return false
 }

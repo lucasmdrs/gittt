@@ -1,6 +1,9 @@
 package gittt
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"log"
+)
 
 type Release struct {
 	Action      string      `json:"action"`
@@ -21,6 +24,7 @@ func ReleaseTrigger(g *Gittt, data []byte) error {
 		return err
 	}
 
+	log.Println("Release Event Received")
 	actions := g.matchConditionals(r)
 	for _, action := range actions {
 		action.Do(r)
@@ -34,6 +38,7 @@ func (g *Gittt) ConditionReleaseFromOneOf(data interface{}, branches ...interfac
 		if !r.ReleaseInfo.Draft {
 			for _, branch := range branches {
 				if r.ReleaseInfo.BranchTarget == branch.(string) {
+					log.Printf("Condition match: Release created from %s\n", branch.(string))
 					return true
 				}
 			}

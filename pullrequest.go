@@ -2,6 +2,7 @@ package gittt
 
 import (
 	"encoding/json"
+	"log"
 )
 
 type PullRequest struct {
@@ -23,6 +24,7 @@ func PullRequestTrigger(g *Gittt, data []byte) error {
 		return err
 	}
 
+	log.Println("Pull Request Event Received")
 	actions := g.matchConditionals(pr)
 	for _, action := range actions {
 		action.Do(pr)
@@ -36,6 +38,7 @@ func (g *Gittt) ConditionPRMergedInAnyOf(data interface{}, branches ...interface
 		if pr.State == "closed" {
 			for _, branch := range branches {
 				if pr.PRInfo.IntoBranch.Ref == branch.(string) {
+					log.Printf("Condition match: PR merged on %s\n", branch.(string))
 					return true
 				}
 			}
