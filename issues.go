@@ -15,7 +15,7 @@ type IssueInfo struct {
 	Labels []Label `json:"labels"`
 }
 
-func IssuesTrigger(g *gittt, data []byte) error {
+func IssuesTrigger(g *Gittt, data []byte) error {
 	var i Issue
 	err := json.Unmarshal(data, &i)
 	if err != nil {
@@ -30,7 +30,7 @@ func IssuesTrigger(g *gittt, data []byte) error {
 	return nil
 }
 
-func (g *gittt) IssueLabelsIsOneOf(data interface{}, labels ...interface{}) bool {
+func (g *Gittt) IssueLabelsIsOneOf(data interface{}, labels ...interface{}) bool {
 	if i, ok := data.(Issue); ok {
 		for _, label := range labels {
 			for _, l := range i.Info.Labels {
@@ -43,7 +43,7 @@ func (g *gittt) IssueLabelsIsOneOf(data interface{}, labels ...interface{}) bool
 	return false
 }
 
-func (g *gittt) IssueIsClosed(data interface{}, args ...interface{}) bool {
+func (g *Gittt) IssueIsClosed(data interface{}, args ...interface{}) bool {
 	if i, ok := data.(Issue); ok {
 		return i.Info.State == "closed"
 	}

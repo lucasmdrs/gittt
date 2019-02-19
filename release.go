@@ -14,7 +14,7 @@ type ReleaseInfo struct {
 	BranchTarget string `json:"target_commitish"`
 }
 
-func ReleaseTrigger(g *gittt, data []byte) error {
+func ReleaseTrigger(g *Gittt, data []byte) error {
 	var r Release
 	err := json.Unmarshal(data, &r)
 	if err != nil {
@@ -29,7 +29,7 @@ func ReleaseTrigger(g *gittt, data []byte) error {
 	return nil
 }
 
-func (g *gittt) ConditionReleaseFromOneOf(data interface{}, branches ...interface{}) bool {
+func (g *Gittt) ConditionReleaseFromOneOf(data interface{}, branches ...interface{}) bool {
 	if r, ok := data.(Release); ok {
 		if !r.ReleaseInfo.Draft {
 			for _, branch := range branches {

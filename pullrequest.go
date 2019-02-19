@@ -16,7 +16,7 @@ type PullRequestInfo struct {
 	Merged     bool   `json:"merged"`
 }
 
-func PullRequestTrigger(g *gittt, data []byte) error {
+func PullRequestTrigger(g *Gittt, data []byte) error {
 	var pr PullRequest
 	err := json.Unmarshal(data, &pr)
 	if err != nil {
@@ -31,7 +31,7 @@ func PullRequestTrigger(g *gittt, data []byte) error {
 	return nil
 }
 
-func (g *gittt) ConditionPRMergedInAnyOf(data interface{}, branches ...interface{}) bool {
+func (g *Gittt) ConditionPRMergedInAnyOf(data interface{}, branches ...interface{}) bool {
 	if pr, ok := data.(PullRequest); ok {
 		if pr.State == "closed" {
 			for _, branch := range branches {

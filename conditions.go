@@ -12,6 +12,6 @@ func (c *condition) AddAction(a action) error {
 	return nil
 }
 
-func (g *gittt) ConditionAlways(data interface{}, args ...interface{}) bool {
+func (g *Gittt) ConditionAlways(data interface{}, args ...interface{}) bool {
 	return true
 }

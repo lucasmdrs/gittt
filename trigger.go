@@ -8,7 +8,7 @@ const (
 	ReleaseEvent  = "release"
 )
 
-type trigger func(g *gittt, data []byte) error
+type trigger func(g *Gittt, data []byte) error
 
 var availableTriggers = map[string]trigger{
 	PREvent:      PullRequestTrigger,

@@ -11,6 +11,6 @@ func (a *action) Do(data interface{}) {
 	a.actionFunc(data, a.args...)
 }
 
-func (g *gittt) ActionLogPayload(data interface{}, args ...interface{}) {
+func (g *Gittt) ActionLogPayload(data interface{}, args ...interface{}) {
 	log.Printf("%+v\n", data)
 }

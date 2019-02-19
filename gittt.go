@@ -6,19 +6,19 @@ import (
 	"net/http"
 )
 
-type gittt struct {
+type Gittt struct {
 	triggers   map[string]trigger
 	conditions []condition
 }
 
-func Init() *gittt {
-	return &gittt{
+func Init() *Gittt {
+	return &Gittt{
 		triggers:   make(map[string]trigger, 0),
 		conditions: make([]condition, 0),
 	}
 }
 
-func (g *gittt) Handler(w http.ResponseWriter, r *http.Request) {
+func (g *Gittt) Handler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	event := r.Header.Get(ghEventHeader)
@@ -42,7 +42,7 @@ func (g *gittt) Handler(w http.ResponseWriter, r *http.Request) {
 	go t(g, data)
 }
 
-func (g *gittt) ListenForEvents(eventTypes ...string) error {
+func (g *Gittt) ListenForEvents(eventTypes ...string) error {
 	currentTriggers := g.triggers
 	for _, event := range eventTypes {
 		if t, exist := availableTriggers[event]; exist {
@@ -55,13 +55,13 @@ func (g *gittt) ListenForEvents(eventTypes ...string) error {
 	return nil
 }
 
-func (g *gittt) ListenAllEvents() {
+func (g *Gittt) ListenAllEvents() {
 	for event, t := range availableTriggers {
 		g.triggers[event] = t
 	}
 }
 
-func (g *gittt) ConditionBuilder(onEvent string, conditionFunc func(data interface{}, args ...interface{}) bool, args ...interface{}) condition {
+func (g *Gittt) ConditionBuilder(onEvent string, conditionFunc func(data interface{}, args ...interface{}) bool, args ...interface{}) condition {
 	return condition{
 		event:    onEvent,
 		arg:      args,
@@ -69,18 +69,18 @@ func (g *gittt) ConditionBuilder(onEvent string, conditionFunc func(data interfa
 	}
 }
 
-func (g *gittt) ActionBuilder(actionFunc func(data interface{}, args ...interface{}), args ...interface{}) action {
+func (g *Gittt) ActionBuilder(actionFunc func(data interface{}, args ...interface{}), args ...interface{}) action {
 	return action{
 		args:       args,
 		actionFunc: actionFunc,
 	}
 }
 
-func (g *gittt) AddConditions(conditions ...condition) {
+func (g *Gittt) AddConditions(conditions ...condition) {
 	g.conditions = append(g.conditions, conditions...)
 }
 
-func (g *gittt) matchConditionals(data interface{}) (actions []action) {
+func (g *Gittt) matchConditionals(data interface{}) (actions []action) {
 	for _, c := range g.conditions {
 		if c.evalFunc(data) {
 			actions = append(actions, c.actions...)
