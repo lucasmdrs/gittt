@@ -25,7 +25,7 @@ func ReleaseTrigger(g *Gittt, data []byte) error {
 	}
 
 	log.Println("Release Event Received")
-	actions := g.matchConditionals(r)
+	actions := g.matchConditionals(ReleaseEvent, r)
 	for _, action := range actions {
 		action.Do(r)
 	}

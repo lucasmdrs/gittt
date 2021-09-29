@@ -1,7 +1,7 @@
 package gittt
 
 type condition struct {
-	event    string
+	event    EventType
 	arg      []interface{}
 	evalFunc func(interface{}, ...interface{}) bool
 	actions  []action

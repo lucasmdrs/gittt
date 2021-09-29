@@ -24,7 +24,7 @@ func IssuesTrigger(g *Gittt, data []byte) error {
 	}
 
 	log.Println("Issue Event Received")
-	actions := g.matchConditionals(i)
+	actions := g.matchConditionals(IssuesEvent, i)
 	for _, action := range actions {
 		action.Do(i)
 	}
@@ -46,7 +46,7 @@ func (g *Gittt) IssueLabelsIsOneOf(data interface{}, labels ...interface{}) bool
 	return false
 }
 
-func (g *Gittt) IssueIsClosed(data interface{}, args ...interface{}) bool {
+func (g *Gittt) IssueIsClosed(data interface{}, _ ...interface{}) bool {
 	if i, ok := data.(Issue); ok {
 		if i.Info.State == "closed" {
 			log.Println("Condition match: Issue is closed.")

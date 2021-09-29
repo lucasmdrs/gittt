@@ -25,7 +25,7 @@ func PullRequestTrigger(g *Gittt, data []byte) error {
 	}
 
 	log.Println("Pull Request Event Received")
-	actions := g.matchConditionals(pr)
+	actions := g.matchConditionals(PREvent, pr)
 	for _, action := range actions {
 		action.Do(pr)
 	}

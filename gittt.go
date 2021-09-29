@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+const ghEventHeader = "X-GitHub-Event"
+
 type Gittt struct {
 	triggers   map[string]trigger
 	conditions []condition
@@ -14,7 +16,7 @@ type Gittt struct {
 
 func Init() *Gittt {
 	return &Gittt{
-		triggers:   make(map[string]trigger, 0),
+		triggers:   make(map[string]trigger),
 		conditions: make([]condition, 0),
 	}
 }
@@ -30,18 +32,14 @@ func (g *Gittt) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Body == nil {
-		log.Println("Invalid payload")
-		http.Error(w, "Invalid payload", http.StatusBadRequest)
-		return
-	}
-
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Println("Invalid payload")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	defer r.Body.Close()
 
 	go t(g, data)
 }
@@ -54,7 +52,7 @@ func (g *Gittt) ListenForEvents(eventTypes ...string) error {
 			continue
 		}
 		g.triggers = currentTriggers
-		return fmt.Errorf(`Event "%s" is not available`, event)
+		return fmt.Errorf(`event "%s" is not available`, event)
 	}
 	return nil
 }
@@ -65,7 +63,7 @@ func (g *Gittt) ListenAllEvents() {
 	}
 }
 
-func (g *Gittt) ConditionBuilder(onEvent string, conditionFunc func(data interface{}, args ...interface{}) bool, args ...interface{}) condition {
+func (g *Gittt) ConditionBuilder(onEvent EventType, conditionFunc func(data interface{}, args ...interface{}) bool, args ...interface{}) condition {
 	return condition{
 		event:    onEvent,
 		arg:      args,
@@ -83,10 +81,9 @@ func (g *Gittt) ActionBuilder(actionFunc func(data interface{}, args ...interfac
 func (g *Gittt) AddConditions(conditions ...condition) {
 	g.conditions = append(g.conditions, conditions...)
 }
-
-func (g *Gittt) matchConditionals(data interface{}) (actions []action) {
+func (g *Gittt) matchConditionals(event EventType, data interface{}) (actions []action) {
 	for _, c := range g.conditions {
-		if c.evalFunc(data, c.arg...) {
+		if (c.event == event || c.event == AnyEvent) && c.evalFunc(data, c.arg...) {
 			actions = append(actions, c.actions...)
 		}
 	}
